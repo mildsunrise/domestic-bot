@@ -16,7 +16,7 @@ backend.on("message", (msg, rinfo) => {
     handlers[msg.from](msg);
 });
 
-var vocoreHeartbeat = new Timer(120 * 1000); // 2:00
+var vocoreHeartbeat = new Timer(210 * 1000); // 3:30
 var vocoreOnline = true;
 function setVocoreOnline(online) {
   if (online === vocoreOnline) return;
