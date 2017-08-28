@@ -2,6 +2,8 @@ var botgram = require("botgram");
 var mqtt = require("mqtt");
 var bot = botgram("243637402:AAGnwv4qt2qAntMmaSXC6pcHJIHPdNa5eG4");
 var Timer = require("./timer");
+var EditedMessage = require("./edited-message");
+var UPS = require("./ups");
 
 var reply = bot.reply(-207667727);
 var secReply = bot.reply(97438879);
@@ -13,6 +15,16 @@ client.on("connect", function () {
   ignore = true;
   setTimeout(() => { ignore = false; }, 1000);
 });
+
+var mainUps = new UPS({
+  hostname: "192.168.100.1",
+  name: "main_ups",
+  interval: 3000,
+});
+
+
+
+/** TIMBRE CASA **/
 
 var currentOnline = true;
 var ignore = true;
@@ -51,6 +63,93 @@ client.on("message", function (topic, msg) {
     else {
       onlineTimer.clear();
       setCurrentOnline(true);
+    }
+  }
+});
+
+
+
+/** UPS **/
+
+var reachable = true;
+
+function setReachable(r, e) {
+  if (reachable === r) return;
+  reachable = r;
+  if (r)
+    secReply.silent().markdown("UPS reachable again.");
+  else
+    secReply.markdown("UPS unreachable!\n" + e.toString());
+}
+
+
+var batteryCharge;
+var batteryMessage;
+var batteryUpdateTimer = new Timer(60 * 1000);
+
+function renderBatteryMessage() {
+  return "🔋 Carga de las baterías: <strong>" + batteryCharge + "%</strong>";
+}
+
+function publishBatteryMessage() {
+  batteryMessage = new EditedMessage(reply.silent(), renderBatteryMessage(), "HTML");
+  batteryUpdateTimer.reset();
+}
+
+batteryUpdateTimer.on("fire", () => {
+  batteryMessage.edit(renderBatteryMessage());
+  batteryUpdateTimer.reset();
+});
+
+function deactivateBatteryMessage() {
+  batteryUpdateTimer.clear();
+  batteryMessage = null;
+}
+
+
+var upsOnline = true;
+
+var batteryPublishTimer = new Timer(5 * 1000);
+batteryPublishTimer.on("fire", () => {
+  publishBatteryMessage();
+});
+
+function setUpsOnline(ol) {
+  if (upsOnline === ol) return;
+  upsOnline = ol;
+  if (ol) {
+    secReply.markdown("🔌✅ Electricidad restablecida");
+    batteryPublishTimer.clear();
+    deactivateBatteryMessage();
+  } else {
+    secReply.markdown("🔌❌ ¡No hay electricidad!");
+    batteryPublishTimer.reset();
+  }
+}
+
+
+var fsdSeen = false;
+mainUps.on("state", () => {
+  if (mainUps.lastError)
+    setReachable(false, mainUps.lastError);
+  else if (mainUps.lastResults)
+    setReachable(true);
+
+  if (!mainUps.lastResults) return;
+  var r = mainUps.lastResults;
+  batteryCharge = parseInt(r["battery.charge"]);
+  var status = r["ups.status"].split(/\s+/g);
+  console.log("status", status);
+
+  if (status.indexOf("OL")!==-1)
+    setUpsOnline(true);
+  else
+    setUpsOnline(false);
+
+  if ((status.indexOf("OB")!==-1 && status.indexOf("LB")!==-1) || status.indexOf("FSD")!==-1) {
+    if (!fsdSeen) {
+      fsdSeen = true;
+      reply.markdown("❗️ **Carga critica, petición de apagado general** ❗️");
     }
   }
 });
