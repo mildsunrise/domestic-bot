@@ -19,7 +19,7 @@ client.on("connect", function () {
 var mainUps = new UPS({
   hostname: "192.168.100.1",
   name: "main_ups",
-  interval: 3000,
+  interval: 2 * 1000,
 });
 
 
@@ -85,7 +85,7 @@ function setReachable(r, e) {
 
 var batteryCharge;
 var batteryMessage;
-var batteryUpdateTimer = new Timer(60 * 1000);
+var batteryUpdateTimer = new Timer(30 * 1000);
 
 function renderBatteryMessage() {
   return "🔋 Carga de las baterías: <strong>" + batteryCharge + "%</strong>";
@@ -139,7 +139,6 @@ mainUps.on("state", () => {
   var r = mainUps.lastResults;
   batteryCharge = parseInt(r["battery.charge"]);
   var status = r["ups.status"].split(/\s+/g);
-  console.log("status", status);
 
   if (status.indexOf("OL")!==-1)
     setUpsOnline(true);
