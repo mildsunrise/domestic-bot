@@ -118,11 +118,11 @@ function setUpsOnline(ol) {
   if (upsOnline === ol) return;
   upsOnline = ol;
   if (ol) {
-    secReply.markdown("🔌✅ Electricidad restablecida");
+    reply.markdown("🔌✅ Electricidad restablecida");
     batteryPublishTimer.clear();
     deactivateBatteryMessage();
   } else {
-    secReply.markdown("🔌❌ ¡No hay electricidad!");
+    reply.markdown("🔌❌ ¡No hay electricidad!");
     batteryPublishTimer.reset();
   }
 }
