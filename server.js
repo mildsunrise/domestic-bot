@@ -1,6 +1,6 @@
 var botgram = require("botgram");
 var mqtt = require("mqtt");
-var bot = botgram("243637402:AAGnwv4qt2qAntMmaSXC6pcHJIHPdNa5eG4");
+var bot = botgram("243637402:AAGnwv4qt2qAntMmaSXC6pcHJIHPdNa5eG4tete");
 var Timer = require("./timer");
 var EditedMessage = require("./edited-message");
 var UPS = require("./ups");
@@ -20,6 +20,28 @@ var mainUps = new UPS({
   hostname: "192.168.100.1",
   name: "main_ups",
   interval: 2 * 1000,
+});
+
+/* Error handling */
+
+var errorMessageSending = false;
+var lastError;
+
+bot.on("error", (err) => {
+  console.error(err);
+  lastError = err;
+  if (errorMessageSending) return;
+  errorMessageSending = true;
+  function sendMsg() {
+    secReply.text("Internal error! Last:\n\n" + lastError.toString());
+    secReply.then((err, msg) => {
+      if (err)
+        setTimeout(sendMsg, 60000);
+      else
+        errorMessageSending = false;
+    });
+  }
+  sendMsg();
 });
 
 
