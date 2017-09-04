@@ -1,6 +1,6 @@
 var botgram = require("botgram");
 var mqtt = require("mqtt");
-var bot = botgram("243637402:AAGnwv4qt2qAntMmaSXC6pcHJIHPdNa5eG4tete");
+var bot = botgram("243637402:AAGnwv4qt2qAntMmaSXC6pcHJIHPdNa5eG4");
 var Timer = require("./timer");
 var EditedMessage = require("./edited-message");
 var UPS = require("./ups");
@@ -28,7 +28,7 @@ var errorMessageSending = false;
 var lastError;
 
 bot.on("error", (err) => {
-  console.error(err);
+  console.error("At %s -> %s", new Date().toISOString(), err.stack);
   lastError = err;
   if (errorMessageSending) return;
   errorMessageSending = true;
