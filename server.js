@@ -44,6 +44,12 @@ bot.on("error", (err) => {
   sendMsg();
 });
 
+/* Ping command */
+
+bot.command("ping", (msg, reply, next) => {
+  reply.markdown("Pong!");
+});
+
 
 
 /** TIMBRE CASA **/
