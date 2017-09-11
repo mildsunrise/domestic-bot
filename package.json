@@ -1,6 +1,7 @@
-{ "name": "timbre-bot"
+{ "name": "domestic-bot"
+, "description": "Personal Telegram bot living at our house server"
 , "private": true
-, "version": "0.0.1"
+, "version": "1.0.0"
 , "dependencies": { "botgram": "2"
                   , "mqtt": "2"
                   , "node-nut": "1"
