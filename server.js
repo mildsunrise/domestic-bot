@@ -1,14 +1,15 @@
+var config = require("./config");
 var botgram = require("botgram");
 var mqtt = require("mqtt");
-var bot = botgram("243637402:AAGnwv4qt2qAntMmaSXC6pcHJIHPdNa5eG4");
 var Timer = require("./lib/timer");
 var EditedMessage = require("./lib/edited-message");
 var UPS = require("./lib/ups");
 
-var reply = bot.reply(-207667727);
-var secReply = bot.reply(97438879);
+var bot = botgram(config.bot_token);
+var reply = bot.reply(config.group_id);
+var secReply = bot.reply(config.backoffice_id);
 
-var client = mqtt.connect("mqtt://local:711f462fba54@localhost");
+var client = mqtt.connect(config.mqtt_url, config.mqtt_options);
 client.on("connect", function () {
   client.subscribe("vocore-timbre/ring-time");
   client.subscribe("vocore-timbre/online");
@@ -17,8 +18,8 @@ client.on("connect", function () {
 });
 
 var mainUps = new UPS({
-  hostname: "192.168.100.1",
-  name: "main_ups",
+  hostname: config.ups.hostname,
+  name: config.ups.name,
   interval: 2 * 1000,
 });
 
