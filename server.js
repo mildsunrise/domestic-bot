@@ -9,6 +9,7 @@ var bot = botgram(config.bot_token);
 var reply = bot.reply(config.group_id);
 var secReply = bot.reply(config.backoffice_id);
 bot.on("ready", () => {
+  console.log("Bot ready.");
   secReply.text("Bot ready.");
 });
 
