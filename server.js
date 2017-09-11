@@ -1,9 +1,9 @@
 var botgram = require("botgram");
 var mqtt = require("mqtt");
 var bot = botgram("243637402:AAGnwv4qt2qAntMmaSXC6pcHJIHPdNa5eG4");
-var Timer = require("./timer");
-var EditedMessage = require("./edited-message");
-var UPS = require("./ups");
+var Timer = require("./lib/timer");
+var EditedMessage = require("./lib/edited-message");
+var UPS = require("./lib/ups");
 
 var reply = bot.reply(-207667727);
 var secReply = bot.reply(97438879);
