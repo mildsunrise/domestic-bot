@@ -182,7 +182,9 @@ mainUps.on("state", () => {
 
   if (!mainUps.lastResults) return;
   var r = mainUps.lastResults;
-  batteryCharge = parseInt(r["battery.charge"]);
+  var charge = Math.pow(parseFloat(r["battery.voltage"]) / 12.36, 16.00);
+  charge = Math.max(0, Math.min(1, charge));
+  batteryCharge = Math.round(charge * 100);
   var status = r["ups.status"].split(/\s+/g);
 
   if (status.indexOf("OL")!==-1)
