@@ -8,6 +8,9 @@ var UPS = require("./lib/ups");
 var bot = botgram(config.bot_token);
 var reply = bot.reply(config.group_id);
 var secReply = bot.reply(config.backoffice_id);
+bot.on("ready", () => {
+  secReply.text("Bot ready.");
+});
 
 var client = mqtt.connect(config.mqtt_url, config.mqtt_options);
 client.on("connect", function () {
