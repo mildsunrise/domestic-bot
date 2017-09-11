@@ -1,9 +1,11 @@
-{ "name": "domestic-bot"
-, "description": "Personal Telegram bot living at our house server"
-, "private": true
-, "version": "1.1.0"
-, "dependencies": { "botgram": "2"
-                  , "mqtt": "2"
-                  , "node-nut": "1"
-                  }
+{
+          "name": "domestic-bot",
+          "description": "Personal Telegram bot living at our house server",
+          "private": true,
+          "version": "1.1.1",
+          "dependencies": {
+                    "botgram": "2",
+                    "mqtt": "2",
+                    "node-nut": "1"
+          }
 }
