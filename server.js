@@ -16,6 +16,9 @@ client.on("connect", function () {
   ignore = true;
   setTimeout(() => { ignore = false; }, 1000);
 });
+client.on("error", function () {
+  console.error("At %s -> %s", new Date().toISOString(), err.stack);
+});
 
 var mainUps = new UPS({
   hostname: config.ups.hostname,
@@ -48,7 +51,20 @@ bot.on("error", (err) => {
 /* Ping command */
 
 bot.command("ping", (msg, reply, next) => {
-  reply.markdown("Pong!");
+  const { version } = require("./package.json");
+  reply.html(
+
+`Pong! Status:
+
+Version %s
+MQTT: <strong>%s</strong>
+Timbre: <strong>%s</strong>
+UPS: <strong>%s</strong>`,
+
+    version,
+    client.connected ? "connected" : "disconnected!",
+    currentOnline ? "online" : "offline!",
+    reachable ? "reachable" : "unreachable!");
 });
 
 
