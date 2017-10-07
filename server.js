@@ -17,6 +17,8 @@ var client = mqtt.connect(config.mqtt_url, config.mqtt_options);
 client.on("connect", function () {
   client.subscribe("vocore-timbre/ring-time");
   client.subscribe("vocore-timbre/online");
+  client.subscribe("manel-router/dash-1/press-time");
+  client.subscribe("manel-router/online");
   ignore = true;
   setTimeout(() => { ignore = false; }, 1000);
 });
@@ -63,12 +65,14 @@ bot.command("ping", (msg, reply, next) => {
 Version %s
 MQTT: <strong>%s</strong>
 Timbre: <strong>%s</strong>
-UPS: <strong>%s</strong>`,
+UPS: <strong>%s</strong>
+Router Manel: <strong>%s</strong>`,
 
     version,
     client.connected ? "connected" : "disconnected!",
-    reachable ? "reachable" : "unreachable!");
     timbreCurrentOnline ? "online" : "offline!",
+    reachable ? "reachable" : "unreachable!",
+    manelCurrentOnline ? "online" : "offline!");
 });
 
 
@@ -207,3 +211,52 @@ mainUps.on("state", () => {
     }
   }
 });
+
+
+
+/** DASHES MANEL **/
+
+var manelCurrentOnline = true;
+{
+
+var ignore = true;
+
+function setCurrentOnline(online) {
+  if (online == manelCurrentOnline) return;
+  if (online) secReply.silent().markdown("manel-router online again.");
+  else secReply.markdown("manel-router offline!");
+  manelCurrentOnline = online;
+}
+
+var onlineTimer = new Timer(1000);
+onlineTimer.on("fire", () => {
+  setCurrentOnline(false);
+});
+
+client.on("message", function (topic, msg) {
+  try {
+    msg = msg.toString("utf-8");
+  } catch (e) {
+    return;
+  }
+
+  if (topic === "manel-router/dash-1/press-time") {
+    if (ignore) return;
+    var n = parseInt(msg, 10);
+    if (isNaN(n) || n < Date.now()/1000 - 5)
+      reply.markdown("Botón presionado fuera de rango: " + n + " (" + (Math.floor(Date.now()/1000)-n) + ")");
+    else
+      reply.markdown("‼️ Emergencia");
+  }
+  if (topic === "manel-router/online") {
+    if (msg !== "true" && msg !== "false") return;
+    var online = JSON.parse(msg);
+    if (!online) onlineTimer.reset();
+    else {
+      onlineTimer.clear();
+      setCurrentOnline(true);
+    }
+  }
+});
+
+}
