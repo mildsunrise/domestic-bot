@@ -67,22 +67,24 @@ UPS: <strong>%s</strong>`,
 
     version,
     client.connected ? "connected" : "disconnected!",
-    currentOnline ? "online" : "offline!",
     reachable ? "reachable" : "unreachable!");
+    timbreCurrentOnline ? "online" : "offline!",
 });
 
 
 
 /** TIMBRE CASA **/
 
-var currentOnline = true;
+var timbreCurrentOnline = true;
+{
+
 var ignore = true;
 
 function setCurrentOnline(online) {
-  if (online == currentOnline) return; 
+  if (online == timbreCurrentOnline) return;
   if (online) secReply.silent().markdown("Vocore online again.");
   else secReply.markdown("Vocore offline!");
-  currentOnline = online;
+  timbreCurrentOnline = online;
 }
 
 var onlineTimer = new Timer(1000);
@@ -115,6 +117,8 @@ client.on("message", function (topic, msg) {
     }
   }
 });
+
+}
 
 
 
