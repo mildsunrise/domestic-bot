@@ -13,13 +13,13 @@ bot.on("ready", () => {
   secReply.text("Bot ready.");
 });
 
+var ignore = true;
 var client = mqtt.connect(config.mqtt_url, config.mqtt_options);
 client.on("connect", function () {
   client.subscribe("vocore-timbre/ring-time");
   client.subscribe("vocore-timbre/online");
   client.subscribe("manel-router/dash-1/press-time");
   client.subscribe("manel-router/online");
-  ignore = true;
   setTimeout(() => { ignore = false; }, 1000);
 });
 client.on("error", function () {
@@ -57,6 +57,7 @@ bot.on("error", (err) => {
 /* Ping command */
 
 bot.command("ping", (msg, reply, next) => {
+  if (msg.chat.id !== config.backoffice_id) return next();
   const { version } = require("./package.json");
   reply.html(
 
@@ -80,9 +81,7 @@ Router Manel: <strong>%s</strong>`,
 /** TIMBRE CASA **/
 
 var timbreCurrentOnline = true;
-{
-
-var ignore = true;
+(function () {
 
 function setCurrentOnline(online) {
   if (online == timbreCurrentOnline) return;
@@ -112,6 +111,7 @@ client.on("message", function (topic, msg) {
       reply.markdown("🛎 Llaman al timbre");
   }
   if (topic === "vocore-timbre/online") {
+    console.log("[%s] timbre going online = %s", new Date().toISOString(), msg);
     if (msg !== "true" && msg !== "false") return;
     var online = JSON.parse(msg);
     if (!online) onlineTimer.reset();
@@ -122,7 +122,7 @@ client.on("message", function (topic, msg) {
   }
 });
 
-}
+})();
 
 
 
@@ -217,9 +217,7 @@ mainUps.on("state", () => {
 /** DASHES MANEL **/
 
 var manelCurrentOnline = true;
-{
-
-var ignore = true;
+(function () {
 
 function setCurrentOnline(online) {
   if (online == manelCurrentOnline) return;
@@ -249,6 +247,7 @@ client.on("message", function (topic, msg) {
       reply.markdown("‼️ Emergencia");
   }
   if (topic === "manel-router/online") {
+    console.log("[%s] manel-router online = %s", new Date().toISOString(), msg);
     if (msg !== "true" && msg !== "false") return;
     var online = JSON.parse(msg);
     if (!online) onlineTimer.reset();
@@ -259,4 +258,4 @@ client.on("message", function (topic, msg) {
   }
 });
 
-}
+})();
