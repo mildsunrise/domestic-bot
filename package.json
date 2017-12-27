@@ -2,7 +2,7 @@
           "name": "domestic-bot",
           "description": "Personal Telegram bot living at our house server",
           "private": true,
-          "version": "1.2.0",
+          "version": "1.2.2",
           "dependencies": {
                     "botgram": "2",
                     "mqtt": "2",
