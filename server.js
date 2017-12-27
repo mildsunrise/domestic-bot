@@ -150,6 +150,8 @@ function renderBatteryMessage() {
 
 function publishBatteryMessage() {
   batteryMessage = new EditedMessage(reply.silent(), renderBatteryMessage(), "HTML");
+  batteryMessage.on("error", (e) => bot.emit("error", e));
+  batteryMessage.on("editError", (e) => bot.emit("error", e));
   batteryUpdateTimer.reset();
 }
 
